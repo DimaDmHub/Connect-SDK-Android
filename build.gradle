@@ -1,66 +1,13 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.1'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url "https://jitpack.io" }
-    }
-}
-
 apply plugin: 'com.android.library'
-apply plugin: 'jacoco'
-
-apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.ConnectSDK'
-
-jacoco {
-    toolVersion = "0.7.1.201405082137"
-}
-
-task jacocoTestReport(type:JacocoReport, dependsOn: "check") {
-    group = "Reporting"
-
-    description = "Generate Jacoco coverage reports"
-
-    getClassDirectories().setFrom(
-            dir: 'build/intermediates/classes/debug',
-            excludes: ['**/R.class',
-                       '**/R$*.class',
-                       '**/*$ViewInjector*.*',
-                       '**/BuildConfig.*',
-                       '**/Manifest*.*']
-    )
-
-    additionalSourceDirs.from = android.sourceSets.main.java.srcDirs
-    sourceDirectories.from = android.sourceSets.main.java.srcDirs
-    executionData.from = 'build/jacoco/testDebug.exec'
-
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
-
-}
-
-build.dependsOn jacocoTestReport
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion '30.0.3'
+    namespace "com.connectsdk"
+    compileSdk 35
 
     defaultConfig {
-        minSdkVersion 24
-        targetSdkVersion 32
+        minSdk 24
+        //noinspection OldTargetApi
+        targetSdk 35
     }
 
     packagingOptions {
@@ -94,6 +41,7 @@ android {
             ]
         }
     }
+
     buildTypes {
         debug {
             testCoverageEnabled = true
@@ -102,7 +50,13 @@ android {
             minifyEnabled false
         }
     }
+
+    buildFeatures {
+        buildConfig true
+    }
+
     android {
+
         lintOptions {
             abortOnError false
         }
@@ -112,6 +66,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     useLibrary 'org.apache.http.legacy'
     ndkVersion "22.1.7171670"
 }
@@ -144,5 +99,3 @@ dependencies {
     testImplementation 'org.powermock:powermock-api-mockito:1.6.2'
     testImplementation 'xmlunit:xmlunit:1.4'
 }
-
-apply from: 'maven-push.gradle'
